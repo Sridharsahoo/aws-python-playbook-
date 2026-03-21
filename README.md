@@ -187,6 +187,242 @@ except Exception as e:
 ```
 
 ---
+# 🔗 API Gateway Playbook
+
+## 🔹 Use Case
+
+Expose Lambda as an HTTP API
+
+## 🔹 Lambda Example (API Response)
+
+```python
+def lambda_handler(event, context):
+    return {
+        "statusCode": 200,
+        "body": "Hello from Lambda"
+    }
+```
+
+## 🔹 JSON Response
+
+```python
+import json
+
+def lambda_handler(event, context):
+    return {
+        "statusCode": 200,
+        "body": json.dumps({"message": "success"})
+    }
+```
+
+👉 API Gateway expects:
+
+* `statusCode`
+* `body` (string)
+
+---
+
+# 🔁 Step Functions Playbook
+
+## 🔹 Use Case
+
+Orchestrate workflows (multiple Lambdas)
+
+## 🔹 Example Flow
+
+```text
+Step1 → Step2 → Step3
+```
+
+## 🔹 Basic Lambda Task Input
+
+```json
+{
+  "orderId": "123"
+}
+```
+
+## 🔹 Lambda Example
+
+```python
+def lambda_handler(event, context):
+    order_id = event['orderId']
+    return {"status": "processed", "orderId": order_id}
+```
+
+## 🔹 Key Concept
+
+* State Machine controls execution
+* Lambda performs tasks
+
+---
+
+# ⏰ EventBridge Playbook
+
+## 🔹 Use Case
+
+Trigger Lambda on schedule or events
+
+## 🔹 Schedule Example (Cron)
+
+```text
+cron(0 13 * * ? *)  # 7 PM IST
+```
+
+## 🔹 Lambda Example
+
+```python
+def lambda_handler(event, context):
+    print("Triggered by EventBridge")
+```
+
+## 🔹 Common Use Cases
+
+* EC2 start/stop automation
+* Daily batch jobs
+* Monitoring triggers
+
+---
+
+# 📬 SQS Playbook
+
+## 🔹 Use Case
+
+Queue-based decoupling (async processing)
+
+## 🔹 Send Message
+
+```python
+import boto3
+
+sqs = boto3.client('sqs')
+
+sqs.send_message(
+    QueueUrl='your-queue-url',
+    MessageBody='Hello from SQS'
+)
+```
+
+## 🔹 Receive Message
+
+```python
+response = sqs.receive_message(
+    QueueUrl='your-queue-url',
+    MaxNumberOfMessages=1
+)
+
+messages = response.get('Messages', [])
+```
+
+## 🔹 Lambda Trigger (Best Practice)
+
+* SQS → Lambda (automatic trigger)
+* No polling needed
+
+---
+
+# 🧠 Architecture Patterns
+
+## 🔹 Event-Driven Pattern
+
+```text
+EventBridge → Lambda → SNS/SQS
+```
+
+## 🔹 Decoupled Architecture
+
+```text
+Producer → SQS → Lambda → DB
+```
+
+## 🔹 API-Based Architecture
+
+```text
+API Gateway → Lambda → DynamoDB
+```
+
+## 🔹 Workflow Orchestration
+
+```text
+Step Functions → Lambda → Multiple Services
+```
+
+---
+
+# 🔥 Real-World Example (Your Use Case)
+
+## EC2 Cost Optimization
+
+```text
+EventBridge (schedule)
+        ↓
+Lambda (Python)
+        ↓
+EC2 start/stop
+```
+
+---
+
+# 🧠 When to Use What
+
+| Service        | Use Case               |
+| -------------- | ---------------------- |
+| API Gateway    | Expose APIs            |
+| Lambda         | Compute logic          |
+| DynamoDB       | NoSQL storage          |
+| SNS            | Notifications          |
+| SQS            | Queue / buffering      |
+| EventBridge    | Scheduling/events      |
+| Step Functions | Workflow orchestration |
+
+---
+
+# 🚀 Architect Tips
+
+## ✅ Use SQS when:
+
+* Need buffering
+* Handle traffic spikes
+
+## ✅ Use SNS when:
+
+* Fan-out notifications
+* Multiple subscribers
+
+## ✅ Use Step Functions when:
+
+* Multi-step workflows
+* Error handling between steps
+
+## ✅ Use EventBridge when:
+
+* Scheduling
+* Event-driven automation
+
+---
+
+# ⚡ Production Best Practices
+
+* Use DLQ (Dead Letter Queue) for SQS/Lambda
+* Enable retries with backoff
+* Use IAM least privilege
+* Use environment variables
+* Add CloudWatch logging & alarms
+
+---
+
+# 🧠 Final Insight
+
+> Don’t think in services.
+> Think in **patterns**:
+
+* Event-driven
+* Async processing
+* Microservices orchestration
+
+---
+
+⭐ Keep extending this playbook as you build real projects!
 
 # 🌍 Environment Variables (Best Practice)
 
