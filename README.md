@@ -1,4 +1,3 @@
-# aws-python-playbook-
 # 🚀 AWS Python Playbook for DevOps & Cloud Architects
 
 A practical reference guide to use **Python (boto3) with AWS services** like DynamoDB, SNS, Lambda, S3, and EC2.
