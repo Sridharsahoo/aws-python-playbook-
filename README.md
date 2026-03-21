@@ -520,3 +520,117 @@ Create reusable snippets for:
 ---
 
 ⭐ If this helped you, consider adding improvements and making it your personal playbook!
+
+
+
+
+
+# 🐳 Docker Integration with AWS Lambda
+
+## 🔹 Overview
+
+AWS Lambda supports container images, allowing you to package your function and dependencies using Docker.
+
+---
+
+## 🔹 Architecture
+
+```text
+Developer → Docker Build → ECR → Lambda
+```
+
+---
+
+## 🔹 Why Use Docker with Lambda?
+
+* Large dependencies (ML, pandas, numpy)
+* Custom runtime support
+* Better control over environment
+* Consistent deployment across environments
+
+---
+
+## 🔹 Lambda Function Example
+
+```python
+# app.py
+def lambda_handler(event, context):
+    return {
+        "statusCode": 200,
+        "body": "Hello from Docker Lambda"
+    }
+```
+
+---
+
+## 🔹 Dockerfile Example
+
+```dockerfile
+FROM public.ecr.aws/lambda/python:3.9
+
+COPY app.py ${LAMBDA_TASK_ROOT}
+
+CMD ["app.lambda_handler"]
+```
+
+---
+
+## 🔹 Build & Push Steps
+
+```bash
+docker build -t my-lambda .
+
+docker tag my-lambda:latest <account-id>.dkr.ecr.<region>.amazonaws.com/my-lambda
+
+docker push <ecr-repo-url>
+```
+
+---
+
+## 🔹 Terraform Example
+
+```hcl
+resource "aws_lambda_function" "docker_lambda" {
+  function_name = "docker-lambda"
+
+  package_type = "Image"
+  image_uri    = "<ecr-repo-url>:latest"
+
+  role = aws_iam_role.lambda_role.arn
+}
+```
+
+---
+
+## 🔹 Best Practices
+
+* Keep image size small
+* Use multi-stage builds
+* Avoid unnecessary libraries
+* Use environment variables for configs
+
+---
+
+## 🔹 When to Use
+
+| Use Case           | Recommendation |
+| ------------------ | -------------- |
+| Simple Lambda      | ZIP            |
+| Heavy dependencies | Docker         |
+| ML workloads       | Docker         |
+| Custom runtime     | Docker         |
+
+---
+
+## 🔹 Limitations
+
+* Larger cold start time
+* Requires Docker knowledge
+* Image size optimization needed
+
+---
+
+## 🔹 Summary
+
+Docker-based Lambda provides flexibility and scalability but should be used based on workload complexity and performance requirements.
+
